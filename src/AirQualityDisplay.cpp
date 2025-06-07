@@ -23,43 +23,44 @@ void AirQualityDisplay::begin() {
 void AirQualityDisplay::create_gui() {
 
     // Create object to acomodate all the sensor readings
-    list = lv_obj_create(lv_scr_act());
+    indoor_display_container = lv_obj_create(lv_scr_act());
+    lv_obj_set_style_pad_all(indoor_display_container, 0, 0);
 
     // Disable scroll bar
-    lv_obj_set_scrollbar_mode(list, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_set_scrollbar_mode(indoor_display_container, LV_SCROLLBAR_MODE_OFF);
 
     // Half the screen
-    lv_obj_set_size(list, screen_width_pixels/2, screen_height_pixels);
+    lv_obj_set_size(indoor_display_container, screen_width_pixels/2, screen_height_pixels);
 
     // Create label for each entry
-    create_sensor_read_display(0, list);
-    create_sensor_read_display(1, list);
-    create_sensor_read_display(2, list);
-    create_sensor_read_display(3, list);
-    create_sensor_read_display(4, list);
+    create_sensor_read_display(0, indoor_display_container, aqi_container);
+    create_sensor_read_display(1, indoor_display_container, eco2_container);
+    create_sensor_read_display(2, indoor_display_container, temp_container);
+    create_sensor_read_display(3, indoor_display_container, hum_container);
+    create_sensor_read_display(4, indoor_display_container, tvoc_container);
 }
 
-void AirQualityDisplay::create_sensor_read_display(int row, lv_obj_t* parent_obj) {
+void AirQualityDisplay::create_sensor_read_display(int row, lv_obj_t*& parent_obj, lv_obj_t*& child_obj) {
 
     // Get height of parent object to divide the rows
     const int height_obj = lv_obj_get_height(parent_obj);
 
     // Define space between values and initial offset
-    const int spacing       = 36;
+    const int spacing       = 37;
     const int offset_y      = 45;
 
     // Define position of second column
     const int col_x         = 45;
 
     // Define offset on x position
-    const int offset_x      = -15;
+    const int offset_x      = 0;
 
     // Compute spacing of current row
     const int row_y         = offset_y + spacing*row;
 
     //char* symbol;
-    char symbol[16];    // Allocate enough space
-    char unit[16];      //
+    char symbol[16];
+    char unit[16];
 
     // Set order of values
     std::vector<const char*> values_order = {"aqi", "co2", "temp", "humidity", "tvoc"};
@@ -67,61 +68,64 @@ void AirQualityDisplay::create_sensor_read_display(int row, lv_obj_t* parent_obj
     // Get the label
     const char* current_label = values_order[row];
 
-    // Define active label to point to different labels
-    lv_obj_t** active_label = nullptr;
+    lv_color_t c;
 
     if (strcmp(current_label, "aqi") == 0) {
-        active_label = &aqi_value;
         strcpy(symbol, AQI_SYMBOL);
         strcpy(unit, "");
+        c = lv_palette_main(LV_PALETTE_BLUE);
 
     } else if (strcmp(current_label, "co2") == 0){
-        active_label = &eco2_value;
         strcpy(symbol, CO2_SYMBOL);
         strcpy(unit, "ppm");
+        c = lv_palette_main(LV_PALETTE_RED);
 
     } else if (strcmp(current_label, "temp") == 0){
-        active_label = &temp_value;
         strcpy(symbol, THERMOMETER_SYMBOL);
         strcpy(unit, "°C");
+        c = lv_palette_main(LV_PALETTE_GREEN);
 
     } else if (strcmp(current_label, "humidity") == 0){
-        active_label = &hum_value;
         strcpy(symbol, HUMIDITY_SYMBOL);
         strcpy(unit, "%");
 
     } else if (strcmp(current_label, "tvoc") == 0){
-        active_label = &tvoc_value;
         strcpy(symbol, TVOC_SYMBOL);
         strcpy(unit, "ppb");
 
     } else {
-        active_label = &aqi_value;
         strcpy(symbol, AQI_SYMBOL);
         strcpy(unit, "");
     }
 
+    // Create container for the readings
+    child_obj = lv_obj_create(parent_obj);
+    lv_obj_set_size(child_obj, lv_pct(100), spacing);
+    lv_obj_set_pos(child_obj, 0, row_y);
+
     // create label for symbol
-    lv_obj_t *symbol_label_obj = lv_label_create(parent_obj);
-    lv_obj_set_height(symbol_label_obj, spacing);
-    lv_obj_set_width(symbol_label_obj, col_x);
-    lv_obj_set_pos(symbol_label_obj, offset_x, row_y);
+    lv_obj_t *symbol_label_obj = lv_label_create(child_obj);
+    lv_obj_set_pos(symbol_label_obj, offset_x, 0);
     lv_label_set_text(symbol_label_obj, symbol);
     lv_obj_set_align(symbol_label_obj, LV_ALIGN_TOP_LEFT);
     lv_obj_set_style_text_font(symbol_label_obj, &symbols_AQI_36_3bpp, 0);
 
     // create label for number
-    *active_label = lv_label_create(parent_obj);
-    lv_obj_set_align(*active_label, LV_ALIGN_TOP_RIGHT);
-    lv_obj_set_pos(*active_label, -17, row_y);
-    lv_label_set_text(*active_label, "0");
-    lv_obj_set_style_text_font(*active_label, &bebas_neu_24_3bpp, 0);
+    lv_obj_t *value_label_obj = lv_label_create(child_obj);
+    lv_obj_set_align(value_label_obj, LV_ALIGN_TOP_RIGHT);
+    lv_obj_set_pos(value_label_obj, -30, 0);
+    lv_obj_set_style_text_font(value_label_obj, &bebas_neu_24_3bpp, 0);
+    lv_obj_set_name(value_label_obj, current_label);
 
     // create label for unit
-    lv_obj_t *unit_label = lv_label_create(parent_obj);
-    lv_obj_align_to(unit_label, *active_label, LV_ALIGN_OUT_RIGHT_TOP, 0 , 5);
-    lv_label_set_text(unit_label, unit);
-    lv_obj_set_style_text_font(unit_label, &bebas_neu_12_3bpp, 0);
+    lv_obj_t *unit_label_obj = lv_label_create(child_obj);
+    lv_obj_align_to(unit_label_obj, value_label_obj, LV_ALIGN_OUT_RIGHT_TOP, 25 , 5);
+    lv_label_set_text(unit_label_obj, unit);
+    lv_obj_set_style_text_font(unit_label_obj, &bebas_neu_12_3bpp, 0);
+
+    lv_obj_set_style_bg_color(child_obj, c, 0);
+    lv_obj_set_scrollbar_mode(child_obj, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_set_style_pad_all(child_obj, 1, 0);
     
 }
 
@@ -133,24 +137,22 @@ void AirQualityDisplay::update_display(int AQI, int TVOC_ppb, int eCO2_ppm, floa
     // Directly update
     char text[10];
     sprintf(text, "%d", AQI);
-    lv_label_set_text(aqi_value, text);
+    lv_label_set_text(lv_obj_get_child_by_name(aqi_container, "aqi"), text);
 
-    Serial.println("Function Reached");
-    
     sprintf(text, "%d", eCO2_ppm);
-    lv_label_set_text(eco2_value, text);
+    lv_label_set_text(lv_obj_get_child_by_name(eco2_container, "co2"), text);
 
     sprintf(text, "%d", TVOC_ppb);
-    lv_label_set_text(tvoc_value, text);
+    lv_label_set_text(lv_obj_get_child_by_name(tvoc_container, "tvoc"), text);
 
     sprintf(text, "%.1f", Temp_C);
-    lv_label_set_text(temp_value, text);
+    lv_label_set_text(lv_obj_get_child_by_name(temp_container, "temp"), text);
 
     sprintf(text, "%.0f", rel_humidity_percent);
-    lv_label_set_text(hum_value, text);
+    lv_label_set_text(lv_obj_get_child_by_name(hum_container, "humidity"), text);
     
     // Set AQI color
-    //lv_obj_set_style_text_color(aqi_value, get_aqi_color(AQI), 0);
+    // lv_obj_set_style_text_color(aqi_value, get_aqi_color(AQI), 0);
 }
 
 // Helper function for AQI colors
