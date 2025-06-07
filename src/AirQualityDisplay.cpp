@@ -13,14 +13,6 @@ LV_FONT_DECLARE(bebas_neu_12_3bpp);
 
 void AirQualityDisplay::begin() {
 
-    // Create style for icons
-    //lv_style_init(&icon_style);
-    //lv_style_set_text_font(&icon_style, &symbols_AQI_36_3bpp);
-
-    // Create style for text
-    //lv_style_init(&text_style_big);
-    //lv_style_set_text_font(&text_style_big, &lv_font_montserrat_24);
-
     lv_init();
     lv_display_t *disp = lv_tft_espi_create(screen_width_pixels, screen_height_pixels, draw_buf, sizeof(draw_buf));
     lv_display_set_rotation(disp, LV_DISPLAY_ROTATION_270); 
@@ -53,8 +45,8 @@ void AirQualityDisplay::create_sensor_read_display(int row, lv_obj_t* parent_obj
     const int height_obj = lv_obj_get_height(parent_obj);
 
     // Define space between values and initial offset
-    const int spacing       = 45;
-    const int offset_y      = 0;
+    const int spacing       = 36;
+    const int offset_y      = 45;
 
     // Define position of second column
     const int col_x         = 45;
