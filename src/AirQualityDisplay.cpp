@@ -2,6 +2,8 @@
 #include <vector>
 
 LV_FONT_DECLARE(symbols_AQI_36_3bpp);
+LV_FONT_DECLARE(bebas_neu_24_3bpp);
+LV_FONT_DECLARE(bebas_neu_12_3bpp);
 
 #define AQI_SYMBOL "A"
 #define TVOC_SYMBOL "B"
@@ -64,7 +66,8 @@ void AirQualityDisplay::create_sensor_read_display(int row, lv_obj_t* parent_obj
     const int row_y         = offset_y + spacing*row;
 
     //char* symbol;
-    char symbol[16];  // Allocate enough space
+    char symbol[16];    // Allocate enough space
+    char unit[16];      //
 
     // Set order of values
     std::vector<const char*> values_order = {"aqi", "co2", "temp", "humidity", "tvoc"};
@@ -78,26 +81,32 @@ void AirQualityDisplay::create_sensor_read_display(int row, lv_obj_t* parent_obj
     if (strcmp(current_label, "aqi") == 0) {
         active_label = &aqi_value;
         strcpy(symbol, AQI_SYMBOL);
+        strcpy(unit, "");
 
     } else if (strcmp(current_label, "co2") == 0){
         active_label = &eco2_value;
         strcpy(symbol, CO2_SYMBOL);
+        strcpy(unit, "ppm");
 
     } else if (strcmp(current_label, "temp") == 0){
         active_label = &temp_value;
         strcpy(symbol, THERMOMETER_SYMBOL);
+        strcpy(unit, "°C");
 
     } else if (strcmp(current_label, "humidity") == 0){
         active_label = &hum_value;
         strcpy(symbol, HUMIDITY_SYMBOL);
+        strcpy(unit, "%");
 
     } else if (strcmp(current_label, "tvoc") == 0){
         active_label = &tvoc_value;
         strcpy(symbol, TVOC_SYMBOL);
+        strcpy(unit, "ppb");
 
     } else {
         active_label = &aqi_value;
         strcpy(symbol, AQI_SYMBOL);
+        strcpy(unit, "");
     }
 
     // create label for symbol
@@ -106,16 +115,21 @@ void AirQualityDisplay::create_sensor_read_display(int row, lv_obj_t* parent_obj
     lv_obj_set_width(symbol_label_obj, col_x);
     lv_obj_set_pos(symbol_label_obj, offset_x, row_y);
     lv_label_set_text(symbol_label_obj, symbol);
-    //lv_obj_set_align(symbol_label_obj, LV_ALIGN_BOTTOM_LEFT);
+    lv_obj_set_align(symbol_label_obj, LV_ALIGN_TOP_LEFT);
     lv_obj_set_style_text_font(symbol_label_obj, &symbols_AQI_36_3bpp, 0);
 
     // create label for number
     *active_label = lv_label_create(parent_obj);
-    lv_obj_set_height(*active_label, spacing);
-    lv_obj_set_pos(*active_label, offset_x + col_x, row_y);
+    lv_obj_set_align(*active_label, LV_ALIGN_TOP_RIGHT);
+    lv_obj_set_pos(*active_label, -17, row_y);
     lv_label_set_text(*active_label, "0");
-    //lv_obj_set_align(*active_label, LV_ALIGN_BOTTOM_LEFT);
-    lv_obj_set_style_text_font(*active_label, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(*active_label, &bebas_neu_24_3bpp, 0);
+
+    // create label for unit
+    lv_obj_t *unit_label = lv_label_create(parent_obj);
+    lv_obj_align_to(unit_label, *active_label, LV_ALIGN_OUT_RIGHT_TOP, 0 , 5);
+    lv_label_set_text(unit_label, unit);
+    lv_obj_set_style_text_font(unit_label, &bebas_neu_12_3bpp, 0);
     
 }
 
@@ -131,16 +145,16 @@ void AirQualityDisplay::update_display(int AQI, int TVOC_ppb, int eCO2_ppm, floa
 
     Serial.println("Function Reached");
     
-    sprintf(text, "%d ppm", eCO2_ppm);
+    sprintf(text, "%d", eCO2_ppm);
     lv_label_set_text(eco2_value, text);
 
-    sprintf(text, "%d ppb", TVOC_ppb);
+    sprintf(text, "%d", TVOC_ppb);
     lv_label_set_text(tvoc_value, text);
 
-    sprintf(text, "%.0f °C", Temp_C);
+    sprintf(text, "%.1f", Temp_C);
     lv_label_set_text(temp_value, text);
 
-    sprintf(text, "%.0f %%", rel_humidity_percent);
+    sprintf(text, "%.0f", rel_humidity_percent);
     lv_label_set_text(hum_value, text);
     
     // Set AQI color

@@ -9,7 +9,10 @@ bool sensor::init() {
 
     Wire.begin();
 
-    _myENS.begin();
+    // Initialize ENS sensor
+    if(!_myENS.begin()){
+        while(1);
+    }
 
     _myENS.setOperatingMode(SFE_ENS160_RESET);
 
