@@ -1,11 +1,11 @@
 #include <Wire.h>
 #include "SparkFun_ENS160.h"
 #include <Adafruit_AHTX0.h>
-#include "sensor.h"
+#include "aqi_sensor.h"
 
 // Inialization function
 // Change accordingly depending on sensor
-bool sensor::init() {
+bool aqi_sensor::init() {
 
     Wire.begin();
 
@@ -24,7 +24,7 @@ bool sensor::init() {
 }
 
 // Read sensor
-void sensor::read() {
+void aqi_sensor::read() {
 
     if( _myENS.checkDataStatus() )
 	{

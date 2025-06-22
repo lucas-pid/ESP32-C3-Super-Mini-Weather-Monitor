@@ -1,0 +1,58 @@
+{
+  "lat": true,
+  "lon": true,
+  "timezone_offset": true,
+  "current": {
+    "temp": true,
+    "humidity":true,
+    "feels_like":true,
+    "dt": true,
+    "weather": [
+      {
+        "icon": true,
+        "description":true,
+        "main": true
+      }
+    ]
+  },
+  "hourly": [
+    {
+	  "dt":true,
+      "temp": true,
+	  "humidity": true,
+	  "pop": true,
+      "weather": [
+        {
+          "main": true,
+          "icon": true
+        }
+      ]
+    }
+  ],
+  "daily": [
+    {
+	  "dt":true,
+      "temp": true,
+	  "humidity": true,
+    "sunrise": true,
+    "sunset": true,
+    "moon_phase": true,
+	  "summary":true,
+	  "pop": true,
+	  "temp":{
+		"max":true,
+		"min":true,
+		"day":true,
+		"night":true,
+		"eve":true,
+		"morn":true
+	  },
+      "weather": [
+        {
+          "main": true,
+          "icon": true
+        }
+      ]
+    }
+  ]  
+}

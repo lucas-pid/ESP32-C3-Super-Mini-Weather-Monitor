@@ -1,18 +1,22 @@
+#pragma once
 #include <Wire.h>
 #include "SparkFun_ENS160.h"
 #include <Adafruit_AHTX0.h>
 
-class sensor{
+class aqi_sensor{
 public:
+
     // Measurement data structure
-    struct {
+    struct measurements {
         int AQI                 = 0;        // Air quality index
         int TVOC_ppb           = 0;        // 3x1 array for accelerometer data [x, y, z]
         int eCO2_ppm           = 0;                       // 3x1 array for magnetometer data [x, y, z]
         int ENS_status          = 0;
         float Temp_C                = 0.0;
         float rel_humidity_percent  = 0.0;
-    } meas;
+    };
+
+    measurements meas;
 
     // Initialization
     bool init();
