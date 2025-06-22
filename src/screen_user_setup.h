@@ -10,10 +10,10 @@
 
 // User defined information reported by "Read_User_Setup" test & diagnostics example
 #define USER_SETUP_INFO "User_Setup"
-#define USE_HSPI_PORT
-//#define ST7789_DRIVER      // Full configuration option, define additional parameters below for this display
-#define ST7789_2_DRIVER
-#define USER_SETUP_ID 135
+//#define USE_HSPI_PORT
+#define ST7789_DRIVER      // Full configuration option, define additional parameters below for this display
+//#define ST7789_2_DRIVER
+//#define USER_SETUP_ID 135
 // For ST7735, ST7789 and ILI9341 ONLY, define the colour order IF the blue and red are swapped on your display
 // Try ONE option at a time to find the correct colour order for your display
 
