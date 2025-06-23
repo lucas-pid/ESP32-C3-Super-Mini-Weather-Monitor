@@ -94,8 +94,7 @@ bool WeatherClient:: update(const String& api_call) {
         JsonObject hourly_item_weather_0        = hourly_item["weather"][0];
         forecast.hourly[count].main             = hourly_item_weather_0["main"].as<String>(); // "Clouds", "Clouds", "Clouds", ...
         forecast.hourly[count].icon             = hourly_item_weather_0["icon"].as<String>(); // "04d", "04d", "03d", "03d", ...
-
-        forecast.hourly[count].pop_percent      = hourly_item["pop"]; // 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+        forecast.hourly[count].pop_percent      = static_cast<int>(std::ceil(hourly_item["pop"].as<float>()*100));
 
         // Increment counter and check if maximum iteration was reached
         count++;
@@ -129,7 +128,7 @@ bool WeatherClient:: update(const String& api_call) {
         //forecast.daily[count].description       = daily_item_weather_0["description"].as<String>(); // "scattered ...
         forecast.daily[count].icon              = daily_item_weather_0["icon"].as<String>(); // "03d", "01d", "04d", "01d", ...
 
-        forecast.daily[count].pop_percent       = daily_item["pop"]; // 0, 0, 0, 0, 1, 1, 1, 1
+        forecast.daily[count].pop_percent       = static_cast<int>(std::ceil(daily_item["pop"].as<float>()*100)); // 0, 0, 0, 0, 1, 1, 1, 1
 
         // Increment counter and check if maximum iteration was reached
         count++;
